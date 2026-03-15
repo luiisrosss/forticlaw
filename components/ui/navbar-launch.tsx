@@ -6,10 +6,10 @@ import { Logo } from "@/components/logo"
 const navLinks = [
   { href: "#features", label: "Features" },
   { href: "#how-it-works", label: "Workflow" },
-  { href: "#waitlist", label: "Early access" },
+  { href: "/sign-in", label: "Sign in" },
 ]
 
-export function Navbar() {
+export function NavbarLaunch() {
   return (
     <header className="fixed left-0 right-0 top-0 z-40 p-4">
       <nav className="mx-auto flex h-14 max-w-5xl items-center justify-between rounded-full border border-white/10 bg-[#0a0a0a]/82 px-4 backdrop-blur-md md:px-6">
@@ -25,17 +25,17 @@ export function Navbar() {
             </Link>
           ))}
           <Link
-            href="#waitlist"
+            href="/sign-up"
             className="ml-2 rounded-full border border-white/10 bg-white px-4 py-2 text-sm font-medium text-[#0a0a0a] transition-colors hover:bg-zinc-200"
           >
-            Request access
+            Get started
           </Link>
         </div>
         <Link
-          href="#waitlist"
+          href="/sign-up"
           className="rounded-full border border-white/10 bg-white px-4 py-2 text-sm font-medium text-[#0a0a0a] transition-colors hover:bg-zinc-200 md:hidden"
         >
-          Access
+          Get started
         </Link>
       </nav>
     </header>

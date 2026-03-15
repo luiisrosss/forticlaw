@@ -11,25 +11,43 @@ const manrope = Manrope({
 })
 
 export const metadata: Metadata = {
-  title: "Forticlaw | AI Ad Creatives for Dropshippers & Ecommerce Sellers",
+  title: {
+    default: "Forticlaw - AI ad creatives for ecommerce",
+    template: "%s | Forticlaw",
+  },
   description:
-    "Generate scroll-stopping Facebook ad creatives in under 60 seconds. Forticlaw connects to your Shopify store, analyzes products with AI, and creates brand-consistent ads automatically.",
-  icons: {
-    icon: [
+    "Generate scroll-stopping Facebook and Instagram ad creatives in under 60 seconds. Paste your product URL, get a draft, and export a brand-consistent batch powered by AI.",
+  keywords: ["dropshipping", "ad creatives", "facebook ads", "instagram ads", "ecommerce", "AI", "Shopify"],
+  authors: [{ name: "Forticlaw" }],
+  creator: "Forticlaw",
+  metadataBase: new URL("https://forticlaw.com"),
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://forticlaw.com",
+    siteName: "Forticlaw",
+    title: "Forticlaw - AI ad creatives for ecommerce",
+    description:
+      "Paste a product URL, get a draft in seconds, and export every ratio your paid campaigns need.",
+    images: [
       {
-        url: "/icon-light-32x32.png",
-        media: "(prefers-color-scheme: light)",
-      },
-      {
-        url: "/icon-dark-32x32.png",
-        media: "(prefers-color-scheme: dark)",
-      },
-      {
-        url: "/icon.svg",
-        type: "image/svg+xml",
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: "Forticlaw - AI ad creatives for ecommerce",
       },
     ],
-    apple: "/apple-icon.png",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Forticlaw - AI ad creatives for ecommerce",
+    description: "Paste a product URL, get a draft in seconds, and export every ratio your paid campaigns need.",
+    images: ["/opengraph-image"],
+    creator: "@forticlaw",
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
 }
 
@@ -46,7 +64,7 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className={`${manrope.variable} font-sans antialiased bg-zinc-950 text-zinc-100`}>
+      <body className={`${manrope.variable} bg-[#0a0a0a] font-sans text-zinc-100 antialiased`}>
         <LenisProvider>{children}</LenisProvider>
         <Analytics />
       </body>

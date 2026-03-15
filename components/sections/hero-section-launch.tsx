@@ -1,7 +1,9 @@
 "use client"
 
-import { type FormEvent, useState } from "react"
+import Link from "next/link"
 import { Logo } from "@/components/logo"
+import { LiquidCtaButton } from "@/components/buttons/liquid-cta-button"
+import { ArrowRight } from "lucide-react"
 
 const proofPoints = [
   { title: "Shopify or any product URL", copy: "No manual intake" },
@@ -9,26 +11,19 @@ const proofPoints = [
   { title: "4 export ratios in one ZIP", copy: "Paid-social ready" },
 ]
 
-export function HeroSection() {
-  const [email, setEmail] = useState("")
-  const [submitted, setSubmitted] = useState(false)
-
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    if (email) {
-      setSubmitted(true)
-    }
-  }
-
+export function HeroSectionLaunch() {
   return (
-    <section id="waitlist" className="relative flex min-h-screen flex-col items-center justify-center px-6 pb-20 pt-24">
+    <section
+      id="hero"
+      className="relative flex min-h-screen flex-col items-center justify-center px-6 pb-20 pt-24"
+    >
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_38%)]" />
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent" />
 
       <div className="relative z-10 mx-auto max-w-3xl text-center">
         <div className="mb-8 inline-flex items-center gap-3 rounded-full border border-white/10 bg-zinc-950/80 px-4 py-2">
           <Logo size="sm" showWordmark={false} href={null} />
-          <span className="text-sm text-zinc-300">Early access for ecommerce operators</span>
+          <span className="text-sm text-zinc-300">Now available for ecommerce operators</span>
         </div>
 
         <h1 className="mb-6 font-display text-5xl font-bold tracking-tight md:text-7xl">
@@ -43,34 +38,18 @@ export function HeroSection() {
           your paid campaigns need in every key ratio.
         </p>
 
-        {submitted ? (
-          <div className="mx-auto max-w-md rounded-2xl border border-white/10 bg-zinc-950/70 p-6">
-            <p className="mb-1 font-medium text-zinc-100">You&apos;re on the list.</p>
-            <p className="text-sm text-zinc-500">We&apos;ll let you know when early access opens.</p>
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="mx-auto max-w-md">
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
-                className="flex-1 rounded-full border border-white/10 bg-zinc-950 px-5 py-3 text-sm text-zinc-100 transition-colors placeholder:text-zinc-600 focus:border-zinc-500 focus:outline-none"
-              />
-              <button
-                type="submit"
-                className="whitespace-nowrap rounded-full border border-white/10 bg-white px-6 py-3 text-sm font-medium text-[#0a0a0a] transition-colors hover:bg-zinc-200"
-              >
-                Request early access
-              </button>
-            </div>
-            <p className="mt-4 text-xs text-zinc-600">
-              Join the first operators testing Forticlaw before public launch.
-            </p>
-          </form>
-        )}
+        <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
+          <Link href="/sign-up">
+            <LiquidCtaButton>Get started free</LiquidCtaButton>
+          </Link>
+          <Link
+            href="#features"
+            className="group flex items-center gap-2 px-6 py-3 text-sm font-medium text-zinc-400 transition-colors hover:text-zinc-100"
+          >
+            <span>See how it works</span>
+            <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+          </Link>
+        </div>
 
         <div className="mt-16 grid gap-3 text-left sm:grid-cols-3">
           {proofPoints.map((item) => (

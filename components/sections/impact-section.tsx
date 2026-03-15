@@ -1,37 +1,34 @@
 const metrics = [
-  { value: "60s", label: "From URL to creative", description: "Lightning fast" },
-  { value: "10+", label: "Ad formats generated", description: "Every size covered" },
-  { value: "3x", label: "Faster than Canva", description: "No templates needed" },
-  { value: "100%", label: "Brand-consistent", description: "Always on brand" },
+  { value: "1 URL", label: "Input", description: "Shopify or product page" },
+  { value: "<15s", label: "Draft ready", description: "First concept to review" },
+  { value: "8", label: "Variations", description: "Batch-ready testing" },
+  { value: "4", label: "Ratios", description: "1:1, 4:5, 9:16, 1.91:1" },
 ]
 
 export function ImpactSection() {
   return (
-    <section id="how-it-works" className="px-6 py-24 bg-zinc-900/20">
-      <div className="max-w-5xl mx-auto">
-        {/* Impact Section Header */}
-        <div className="text-center mb-12">
-          <p className="text-sm font-medium text-zinc-500 uppercase tracking-wider mb-4">Why Forticlaw</p>
-          <h2 className="font-display text-3xl md:text-4xl font-bold text-zinc-100 mb-4">Built for speed and scale</h2>
-          <p className="text-zinc-500 max-w-lg mx-auto text-balance">
-            Numbers that speak for themselves. Built specifically for ecommerce sellers.
+    <section id="how-it-works" className="bg-zinc-900/20 px-6 py-24">
+      <div className="mx-auto max-w-5xl">
+        <div className="mb-12 text-center">
+          <p className="mb-4 text-sm font-medium uppercase tracking-wider text-zinc-500">Why Forticlaw</p>
+          <h2 className="mb-4 font-display text-3xl font-bold text-zinc-100 md:text-4xl">A workflow built for ad output</h2>
+          <p className="mx-auto max-w-lg text-balance text-zinc-500">
+            One input, one draft, one approved batch, and every key paid-social ratio already covered.
           </p>
         </div>
 
-        {/* Metrics Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
           {metrics.map((metric) => (
             <div
               key={metric.label}
-              className="p-6 rounded-2xl bg-zinc-900/50 border border-zinc-800/50 hover:border-zinc-700/50 hover:bg-zinc-900/80 transition-all duration-300 group text-center relative overflow-hidden"
+              className="group relative overflow-hidden rounded-2xl border border-zinc-800/50 bg-zinc-900/50 p-6 text-center transition-all duration-300 hover:border-zinc-700/50 hover:bg-zinc-900/80"
             >
-              {/* Subtle gradient on hover */}
-              <div className="absolute inset-0 bg-gradient-to-t from-zinc-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="absolute inset-0 bg-gradient-to-t from-zinc-500/5 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
               <div className="relative">
-                <p className="font-display text-3xl md:text-4xl font-bold text-zinc-100 mb-1 group-hover:text-white transition-colors">
+                <p className="mb-1 font-display text-3xl font-bold text-zinc-100 transition-colors group-hover:text-white md:text-4xl">
                   {metric.value}
                 </p>
-                <p className="text-sm font-medium text-zinc-400 mb-1">{metric.label}</p>
+                <p className="mb-1 text-sm font-medium text-zinc-400">{metric.label}</p>
                 <p className="text-xs text-zinc-600">{metric.description}</p>
               </div>
             </div>
