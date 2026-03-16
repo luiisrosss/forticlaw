@@ -3,6 +3,7 @@ import type { Metadata } from "next"
 import { Manrope } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { LenisProvider } from "@/components/providers/lenis-provider"
+import { ClerkProvider } from "@clerk/nextjs"
 import "./globals.css"
 
 const manrope = Manrope({
@@ -57,17 +58,19 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className="dark">
-      <head>
-        <link
-          href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Instrument+Sans:wght@400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
-      </head>
-      <body className={`${manrope.variable} bg-[#0a0a0a] font-sans text-zinc-100 antialiased`}>
-        <LenisProvider>{children}</LenisProvider>
-        <Analytics />
-      </body>
-    </html>
+    <ClerkProvider afterSignOutUrl="/" signInUrl="/sign-in" signUpUrl="/sign-up">
+      <html lang="en" className="dark">
+        <head>
+          <link
+            href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Instrument+Sans:wght@400;500;600;700&display=swap"
+            rel="stylesheet"
+          />
+        </head>
+        <body className={`${manrope.variable} bg-[#0a0a0a] font-sans text-zinc-100 antialiased`}>
+          <LenisProvider>{children}</LenisProvider>
+          <Analytics />
+        </body>
+      </html>
+    </ClerkProvider>
   )
 }

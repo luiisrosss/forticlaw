@@ -1,0 +1,24 @@
+{
+  "nav": {
+    "dashboard": "Panel",
+    "projects": "Proyectos",
+    "settings": "Ajustes",
+    "allProjects": "Todos los proyectos"
+  },
+  "sidebar": {
+    "credits": "créditos restantes",
+    "collapse": "Colapsar sidebar",
+    "expand": "Expandir sidebar"
+  },
+  "topbar": {
+    "newCreative": "Nuevo creativo",
+    "language": "Idioma"
+  },
+  "common": {
+    "loading": "Cargando...",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "back": "Volver",
+    "continue": "Continuar"
+  }
+}

@@ -166,6 +166,42 @@ Todo competidor serio ofrece esto. Si Forticlaw no lo tiene, pierde usuarios ant
 | **Shopify + URL manual unificados** | Canva/Predis no tienen Shopify nativo | OAuth Shopify + scraping de cualquier URL en el mismo flujo |
 | **Flujo ultra-guiado** | Mayoría requieren setup complejo | 45 segundos de URL a primer draft. El AI hace el 80%, tú revisas |
 | **Billing transparente** | AdCreative y Madgicx tienen reputación pésima en billing | Sin sorpresas. Cancel anytime real. Sin auto-renew trampa |
+| **Platform-aware creatives** | AdCreative y Predis generan sin adaptar al canal | Cada plataforma recibe su formato, copy y estilo nativo (TikTok UGC, Pinterest aesthetic, Meta conversion) |
+
+---
+
+## Gap de mercado: Platform targeting
+
+### Lo que los competidores NO hacen bien
+
+**AdCreative.ai:**
+- Solo exporta ratios genéricos (no hay distinción por plataforma)
+- El copy no cambia entre Meta y TikTok aunque tengan límites y estilos radicalmente distintos
+- No conoce las safe zones de TikTok (textos aparecen cubiertos por UI nativa)
+- Cero templates UGC-native para TikTok
+- No exporta en 2:3 para Pinterest
+
+**Predis.ai:**
+- Tiene publicación multi-canal PERO genera el mismo creativo para todos
+- No adapta el copy según los char limits de cada plataforma
+- No genera en el formato 2:3 de Pinterest por defecto
+- TikTok: usa el mismo "polished ad" estilo que funciona en Meta → pérdida de reach nativo
+
+**Canva:**
+- El usuario debe saber manualmente qué tamaño usar para cada plataforma
+- No hay guidance de "este template está optimizado para TikTok"
+- Las plantillas son genéricas, no conversion-optimized ni platform-specific
+- No aplica safe zones automáticamente
+
+### Por qué esto importa para los dropshippers de nuestro target
+
+Los dropshippers avanzados corren ads en Meta Y TikTok simultáneamente. El flujo actual (sin platform targeting) les obliga a:
+1. Descargar el creativo de Meta (1:1 o 4:5)
+2. Ir a Canva y rediseñarlo para TikTok (9:16 con texto superpuesto estilo UGC)
+3. Escribir un nuevo caption de TikTok (más corto, con hook)
+4. Re-exportar
+
+Con Forticlaw platform targeting: seleccionan Meta + TikTok en el paso de configuración y reciben AMBAS versiones optimizadas automáticamente en el mismo batch. El time-to-publish pasa de 2h a 2min.
 
 ---
 

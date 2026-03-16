@@ -25,6 +25,7 @@
 16. [Emails transaccionales (Resend)](#16-emails-transaccionales)
 17. [Templates de creativos](#17-templates-de-creativos)
 18. [Export system](#18-export-system)
+19. [Platform targeting — Distinción por red social](#19-platform-targeting--distinción-por-red-social)
 
 ---
 
@@ -99,7 +100,8 @@ Es el "home" al que el usuario vuelve cada vez. Necesita responder en 3 segundos
 
 ```
 Header (fijo en toda la app):
-  [Logo / sidebar toggle] [Breadcrumb: Dashboard] [+ New Creative] [Credits: X remaining] [User avatar]
+  [☰ mobile] [Breadcrumb: Dashboard] ··· [+ New Creative] [User avatar]
+  Nota: el selector de idioma NO está en la topbar — está en /dashboard/settings
 
 Body:
   Sección "Your projects" → cards de proyectos (max 6, "Ver todos" si hay más)
@@ -260,6 +262,11 @@ Este es el core del producto. Todo lo demás (brand kit, memoria, instrucciones)
 
 ```
 FASE 1 — Configuración de campaña:
+  Plataformas destino (nuevo — ver Sección 19):
+    ☑ Meta (Facebook + Instagram)  ← checked por defecto
+    ☑ TikTok
+    ☐ Pinterest
+    ☐ Google Display
   Objetivo: Sale · Traffic · Retargeting · Brand awareness · Launch
   Copy angles (multi-select):
     Pain · Benefit · Urgency · Social proof · Price · Story · Curiosity
@@ -622,8 +629,9 @@ Idioma de la UI:
   Librería: next-intl
   Archivos: /messages/en.json (primario) + /messages/es.json
   Persistencia: localStorage + cookie
-  Selector: en topbar del dashboard (flag icon + dropdown EN / ES)
-  También en: /dashboard/settings como preferencia guardada
+  Selector: SOLO en /dashboard/settings (no en la topbar)
+  Decisión de diseño: la topbar es para acciones frecuentes (+ New Creative, avatar).
+  El idioma es una preferencia de cuenta — va en Settings, no en la barra de navegación.
 
 Idioma del copy de los creativos:
   Opción separada del idioma de la UI (independiente)
@@ -720,35 +728,332 @@ El usuario puede sobreescribir vía "Change template" en la revisión del draft
 ## 18. Export system
 
 **¿Qué es?**
-Sistema que convierte los creativos aprobados en archivos PNG/JPG descargables en los 4 formatos de ratio requeridos por Meta Ads.
+Sistema que convierte los creativos aprobados en archivos PNG/JPG descargables, organizados por plataforma de destino y ratio.
 
 **¿Cómo funciona?**
 
 ```
-Formatos generados por creativo:
-  1:1     (1080×1080px)  → Feed
-  4:5     (1080×1350px)  → Feed portrait
-  9:16    (1080×1920px)  → Stories / Reels
-  1.91:1  (1200×628px)   → Link ads / Banner
+Ratios soportados (actualizado con plataformas):
+  1:1     (1080×1080px)  → Meta Feed, Pinterest, Google Display
+  4:5     (1080×1350px)  → Meta Feed portrait (mejor alcance en Instagram)
+  9:16    (1080×1920px)  → Meta Stories/Reels, TikTok In-Feed
+  2:3     (1000×1500px)  → Pinterest Standard Pin ← NUEVO en V1.1
+  1.91:1  (1200×628px)   → Google Display, Meta Link Ads
 
 Proceso:
-  1. Canvas Fabric.js en el ratio 1:1 como base
-  2. Server-side: se adapta el layout a cada ratio (reposicionamiento de elementos)
+  1. Canvas Fabric.js renderiza en el ratio nativo de cada plataforma
+  2. Safe zones aplicadas según la plataforma (TikTok: 130px top/bottom)
   3. Export: canvas.toDataURL('image/png') → buffer → Supabase Storage
-  4. ZIP assembly: carpeta por creativo con los 4 archivos
-    /creative-name/1x1.png
-    /creative-name/4x5.png
-    /creative-name/9x16.png
-    /creative-name/landscape.png
+  4. ZIP assembly: estructura de carpetas por plataforma
+
+  Si se generó para Meta únicamente:
+    /meta/creative-name/feed_1x1.png
+    /meta/creative-name/feed_4x5.png
+    /meta/creative-name/stories_9x16.png
+
+  Si se generó para múltiples plataformas:
+    /meta/creative-name/feed_1x1.png, feed_4x5.png, stories_9x16.png
+    /tiktok/creative-name/infeed_9x16.png
+    /pinterest/creative-name/standard_2x3.png, square_1x1.png
+    /google/creative-name/landscape_1.91x1.png, square_1x1.png
 
 Opciones de descarga:
-  Creativo individual → ZIP con 4 ratios
-  Selección múltiple → ZIP con subcarpetas por creativo
-  Batch completo → ZIP con toda la estructura
+  Creativo individual → ZIP con todos los ratios de sus plataformas
+  Selección múltiple → ZIP organizado por plataforma
+  Batch completo → ZIP completo con toda la estructura
 
-Calidad: 72 DPI (estándar para Facebook Ads)
-Formato: PNG (default, lossless) o JPG (opción para archivos más pequeños)
+Calidad: 72 DPI para Meta/TikTok/Pinterest, 96 DPI para Google Display
+Formato: PNG (default) o JPG (archivos más pequeños, útil para Google)
 ```
+
+---
+
+## 19. Platform targeting — Distinción por red social
+
+**¿Qué es?**
+Sistema que permite al usuario seleccionar las plataformas de destino de sus creativos antes de generar. Forticlaw adapta automáticamente los ratios, los límites de copy, la estructura visual y las zonas seguras según cada plataforma.
+
+**¿Por qué existe?**
+Cada red social tiene especificaciones técnicas, algoritmos de distribución y expectativas visuales radicalmente diferentes. Un creativo que funciona en Meta Feed falla en TikTok porque TikTok penaliza el contenido "publicitario polished" en favor del estilo UGC nativo. Pinterest requiere un ratio 2:3 que no existe en los 4 ratios actuales. Google Display necesita composiciones legibles a 300×250px. Sin distinción por plataforma, el usuario recibe creativos genéricos que no están optimizados para ningún canal específico — exactamente el problema que tienen AdCreative.ai y Predis.ai.
+
+**Plataformas soportadas en V1:**
+
+| Plataforma | Subcanales | Ratios principales | Stilo visual esperado |
+|-----------|-----------|-------------------|----------------------|
+| **Meta** | Facebook Feed, Instagram Feed, Stories, Reels | 1:1, 4:5, 9:16 | Limpio, producto protagonista, texto con CTA/precio |
+| **TikTok** | In-Feed Ads, Spark Ads | 9:16 | UGC nativo, hook en primeros 3s, texto superpuesto |
+| **Pinterest** | Standard Pin, Shopping Pin | 2:3 (nuevo), 1:1 | Lifestyle/aspiracional, poca texto, alta calidad visual |
+| **Google Display** | Responsive Display Ads, Standard | 1.91:1, 1:1 | Simple, legible a tamaño pequeño, CTA claro |
+
+**Plataformas V2 (roadmap):** Snapchat, YouTube Shorts, X/Twitter
+
+---
+
+### Especificaciones técnicas por plataforma (referencia para el sistema de generación)
+
+#### META (Facebook + Instagram)
+```
+Formatos de imagen:
+  Feed (Facebook + Instagram):  1:1 (1080×1080), 4:5 (1080×1350) ← mejor alcance
+  Stories / Reels:               9:16 (1080×1920) ← full-screen vertical
+
+Límites de archivo:
+  Imagen: máx 30MB (JPG/PNG)
+  Video: máx 4GB
+
+Límites de copy:
+  Primary text:    125 chars visibles (se trunca con "... más")
+  Headline:        40 chars
+  Description:     30 chars (solo en algunos placements)
+  CTA:             botón estándar de dropdown (Shop Now, Learn More, etc.)
+
+Zonas seguras (Safe zones):
+  Stories/Reels: reservar 250px top y bottom para UI de Instagram
+  Feed: sin zona segura crítica, pero texto en zona central
+
+Overlay de texto:
+  Meta eliminó la regla del 20% en 2021, pero el algoritmo sigue
+  favoreciendo creativos con menos texto. Guía: máx 20% del área.
+
+Características especiales:
+  Advantage+ Creative: Meta puede modificar el creativo automáticamente
+  (añadir marcos, variantes de color). Opción en Campaign Settings.
+  Dynamic Creative: múltiples assets → Meta los combina automáticamente
+  Carousel: 2–10 tarjetas, cada una 1:1
+```
+
+#### TIKTOK
+```
+Formatos:
+  In-Feed Ads:    9:16 (1080×1920) ← formato principal
+  Square:         1:1 (720×720) ← soporte secundario
+  Landscape:      16:9 (1280×720) ← para ciertas superficies
+
+Límites de archivo:
+  Video: máx 500MB
+  Duración: 5–60s (In-Feed), hasta 60s Branded
+  Imagen: máx 100KB por frame
+
+Límites de copy:
+  Caption/texto del ad: 12–100 chars (EN) / 12–150 chars (JPN)
+  No hay headline separado en In-Feed — el texto va como caption
+
+Zonas seguras — CRÍTICO:
+  Reservar 130px (12%) en el BOTTOM: username, descripción, música, CTA nativo
+  Reservar 130px (12%) en el TOP: barra de estado
+  Zona activa: 130px – 1790px (de 1920px total)
+  Texto, logos y CTAs deben estar en la zona central activa
+
+Estilo visual que funciona:
+  × EVITAR: look "publicitario" con logos grandes y texto polished
+  ✓ USAR: estilo UGC (User-Generated Content) — parece grabado por un creador
+  ✓ USAR: hook de texto en primeros 3 segundos ("POV:", "This changed my life", etc.)
+  ✓ USAR: subtítulos/captions en pantalla (texto superpuesto animado)
+  ✓ USAR: colores vibrantes, high contrast en el frame inicial
+  El algoritmo de TikTok da prioridad al Watch Time → el hook visual es crítico
+
+Características especiales:
+  Spark Ads: impulsar un post orgánico existente como ad (requiere cuenta TikTok)
+  TopView: primer video mostrado al abrir app, hasta 60s
+  TikTok Shop: para sellers con tienda en TikTok
+```
+
+#### PINTEREST
+```
+Formatos:
+  Standard Pin:    2:3 (1000×1500) ← FORMATO DOMINANTE, muy diferente de Meta
+  Square Pin:      1:1 (1000×1000)
+  Video Pin:       2:3 o 1:1, 4s–15min
+
+Límites de archivo:
+  Imagen: máx 20MB (PNG/JPG)
+  Video: máx 2GB
+
+Límites de copy:
+  Title:        100 chars (se muestra en el feed)
+  Description:  500 chars (se usa para SEO en Pinterest Search)
+  CTA:          texto libre del campo + botón nativo
+
+Zonas seguras:
+  Bottom right: el botón "Save" de Pinterest puede solapar 60×60px
+  Evitar texto crítico en bottom-right de la imagen
+
+Estilo visual:
+  × EVITAR: texto agresivo de precio/descuento ("¡OFERTA!")
+  × EVITAR: composición apretada con muchos elementos
+  ✓ USAR: fotografía de alta calidad, lifestyle, aspiracional
+  ✓ USAR: paletas de color suaves/estéticas, bien curadas
+  ✓ USAR: poca o ninguna superpoisición de texto (la imagen habla sola)
+  ✓ USAR: description rico en keywords (Pinterest es un motor de búsqueda)
+  El usuario de Pinterest está en modo descubrimiento, no compra reactiva
+
+Características especiales:
+  Shopping Ads: conectar catálogo de productos → Pinterest genera pins automáticos
+  Idea Pins: formato multi-página (stories), no enlaza externamente
+  Pinterest Lens: search visual — imágenes con alta calidad visual rankean mejor
+```
+
+#### GOOGLE DISPLAY ADS
+```
+Formatos (Responsive Display Ads — el sistema actual de Google):
+  Google recibe múltiples assets y los ensambla automáticamente:
+  - Imágenes landscape: 1.91:1 mín 1200×628 (recomendado)
+  - Imágenes cuadradas: 1:1 mín 1200×1200 (recomendado)
+  - Logo cuadrado: 1:1, mín 128×128
+  - Logo landscape: 4:1, mín 512×128
+  El sistema genera combinaciones para los cientos de formatos de banner del GDN
+
+Límites de archivo: máx 5MB por imagen
+
+Límites de copy (Responsive Display):
+  Headlines: hasta 5, máx 30 chars cada uno
+  Long headline: 1, máx 90 chars
+  Descriptions: hasta 5, máx 90 chars cada uno
+  Business name: máx 25 chars
+  Google testa combinaciones y optimiza automáticamente
+
+Estilo visual:
+  × EVITAR: composiciones complejas (el ad se muestra en cientos de tamaños)
+  ✓ USAR: fondo sólido o simple (la imagen debe funcionar recortada)
+  ✓ USAR: producto centrado y grande, claramente visible
+  ✓ USAR: contraste alto, legibilidad en tamaño pequeño (300×250 es el más común)
+  ✓ USAR: la imagen debe funcionar SIN texto (Google puede ensamblarla sin copy)
+  La imagen landing page debe coincidir con el creativo (relevance score)
+
+Características especiales:
+  Dynamic Display Ads: conectar feed de productos → Google genera creativos automáticamente
+  Smart Display: Google gestiona todo (assets, targets, bids)
+  Performance Max: cross-channel con assets de Display
+```
+
+---
+
+### Cómo funciona la selección de plataformas en el flujo
+
+```
+FASE 1 — Configuración de campaña (actualización):
+  Nueva sección "Target platforms" (antes de los copy angles):
+
+  Checkboxes con iconos:
+  ☑ Meta (Facebook + Instagram)     ← checked por defecto
+  ☑ TikTok
+  ☐ Pinterest
+  ☐ Google Display
+
+  Al seleccionar una plataforma:
+  → El sistema activa los ratios correspondientes automáticamente:
+    Meta → 1:1, 4:5, 9:16
+    TikTok → 9:16 (o 1:1 como secundario)
+    Pinterest → 2:3, 1:1
+    Google → 1.91:1, 1:1
+  → Se muestran los límites de copy activos (el más restrictivo de todas las seleccionadas)
+  → Se activa el modo de estilo correspondiente en el prompt de generación
+
+  Si se seleccionan múltiples plataformas:
+  → Para plataformas que comparten ratio (ej: Meta 9:16 y TikTok 9:16):
+    Se genera 1 imagen base + variante de copy/estilo por plataforma
+  → Para plataformas con ratio único (ej: Pinterest 2:3):
+    Se genera una versión nueva en ese ratio
+
+NUEVA SECCIÓN en FASE 1 — "Platform-specific adjustments" (expandible):
+  Para Meta: toggle "Enable Advantage+ creative variations"
+  Para TikTok: toggle "UGC-style overlay text" + "Add hook text frame"
+  Para Pinterest: toggle "Keyword-rich description (SEO)"
+  Para Google: toggle "Multiple headline variants for A/B"
+```
+
+---
+
+### Adaptaciones de copy por plataforma
+
+La IA adapta la estructura y tono del copy según la plataforma destino:
+
+| Elemento | Meta | TikTok | Pinterest | Google Display |
+|---------|------|--------|-----------|----------------|
+| Headline | Beneficio + urgencia ("Get 50% off today") | Hook + engagement ("POV: you found...") | Descriptivo + aspiracional ("The bag that...") | Conciso + CTA ("Shop Sale — 50% Off") |
+| Body | Beneficio principal + prueba social | No existe (caption es el body) | Keywords + descripción de producto | Breve (90 chars max) |
+| CTA visible | "Shop Now", "Get Yours" en imagen | Superpuesto en el video con arrow | Minimal o ninguno en imagen | "Shop Now" claro |
+| Emojis | Moderado (1–2 relevantes) | Abundante (estilo nativo) | Ninguno (aesthetic) | Ninguno |
+| Límite operativo | 125 chars primary | 100 chars | 100 chars title | 30 chars headline |
+
+---
+
+### Export organizado por plataforma
+
+```
+Estructura del ZIP actualizada:
+  /batch-[id]/
+    /meta/
+      /creativo-01/
+        feed_1x1.png          (1080×1080)
+        feed_4x5.png          (1080×1350)
+        stories_9x16.png      (1080×1920)
+    /tiktok/
+      /creativo-01/
+        infeed_9x16.png       (1080×1920)
+    /pinterest/
+      /creativo-01/
+        standard_2x3.png      (1000×1500)
+        square_1x1.png        (1000×1000)
+    /google/
+      /creativo-01/
+        landscape_1.91x1.png  (1200×628)
+        square_1x1.png        (1200×1200)
+
+Cada archivo viene renombrado con el nombre de plataforma/ratio para
+facilitar la subida directa al Ads Manager correspondiente.
+```
+
+**Reglas:**
+- Si el usuario selecciona solo Meta: el ZIP tiene la estructura anterior (backward compatible)
+- Un creativo con adaptaciones para 2 plataformas = 1 crédito (no 2). El ratio/estilo es variante, no creativo nuevo.
+- Pinterest (2:3) sí cuenta como creativo adicional si Meta no tiene ese ratio
+- La selección de plataformas se puede cambiar por generación, aunque el proyecto tenga un default
+
+---
+
+### Plantillas específicas por plataforma
+
+Los templates ahora tienen una propiedad `platform_tags` que indica para qué plataformas están optimizados:
+
+```json
+{
+  "id": "tiktok-ugc-hook-01",
+  "name": "TikTok UGC Hook",
+  "platform_tags": ["tiktok"],
+  "safe_zones": {
+    "tiktok": { "top": 130, "bottom": 130 }
+  },
+  "aspect_ratios": ["9:16"],
+  "style": "ugc_native"
+}
+
+{
+  "id": "pinterest-lifestyle-01",
+  "name": "Pinterest Lifestyle",
+  "platform_tags": ["pinterest"],
+  "aspect_ratios": ["2:3", "1:1"],
+  "style": "minimal_aesthetic"
+}
+
+{
+  "id": "meta-price-reveal-01",
+  "name": "Meta Price Reveal",
+  "platform_tags": ["meta", "google"],
+  "safe_zones": {
+    "meta_stories": { "top": 250, "bottom": 250 }
+  },
+  "aspect_ratios": ["1:1", "4:5", "9:16", "1.91:1"],
+  "style": "conversion_focused"
+}
+```
+
+**Catálogo MVP actualizado (30 templates → 38 templates con versiones por plataforma):**
+- Meta-focused (conversion):     10 templates (before/after, price reveal, benefit)
+- TikTok-native (UGC hook):       8 templates (hook opener, POV style, trending overlay)
+- Pinterest-aesthetic:             6 templates (lifestyle, minimal, product hero)
+- Google Display (simple/bold):   6 templates (product + CTA, single benefit)
+- Multi-platform (universal):      8 templates (works across all, conservative style)
 
 ---
 

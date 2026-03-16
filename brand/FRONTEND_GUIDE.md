@@ -117,8 +117,8 @@ Mono (IDs, ratios):   font-mono text-xs text-zinc-500
 
 ```
 ┌──────────────────────────────────────────────────────────────────┐
-│ SIDEBAR (240px expandido / 56px colapsado)                       │
-│ [Logo] ··········································· [Collapse btn] │
+│ SIDEBAR EXPANDIDO (240px)                                        │
+│ [Forticlaw logo] ································· [← collapse]  │
 │ ────────────────────────────────────────────────────────────────│
 │ [⊞] Dashboard                                                    │
 │ [⊟] Projects                                                     │
@@ -126,12 +126,27 @@ Mono (IDs, ratios):   font-mono text-xs text-zinc-500
 │    └ Gadgets Shop                                                │
 │ [◈] Settings                                                     │
 │ ────────────────────────────────────────────────────────────────│
-│ [Credits: 87/100]                                                │
-│ [●] Luis Rosales ▸                                               │
+│ [Credits: 87/100 ████████░░]                                     │
+│ [●] Luis Rosales                                                 │
 └──────────────────────────────────────────────────────────────────┘
 
+│ SIDEBAR COLAPSADO (56px)                  │
+│ [Fo]                                      │
+│ [→ expand]                                │  ← dentro del header, bajo el logo
+│ ─────────────────────────────────────────│
+│ [⊞]   (tooltip: Dashboard)               │
+│ [⊟]   (tooltip: Projects)                │
+│ [◈]   (tooltip: Settings)                │
+│ ─────────────────────────────────────────│
+│ [💳]                                      │  ← CreditCard icon
+│ [↑]                                       │  ← flecha arriba → /settings/billing
+│ ─────────────────────────────────────────│
+│ [●]                                       │
+└───────────────────────────────────────────┘
+
 TOPBAR (56px, fija):
-[Sidebar toggle] [Breadcrumb: Dashboard / Projects / Nike Store] ··· [+ New Creative] [🌐 EN] [User avatar]
+[☰ mobile only] [Breadcrumb: Dashboard / Projects / Nike Store] ··· [+ New Creative] [User avatar]
+(El selector de idioma está en /dashboard/settings, no en la topbar)
 
 CONTENT AREA:
   max-w-6xl mx-auto px-6 py-8
@@ -142,44 +157,73 @@ CONTENT AREA:
 
 ```tsx
 // Contenedor sidebar
-className="fixed left-0 top-0 z-30 flex h-screen w-60 flex-col
+className="fixed left-0 top-0 z-30 flex h-screen flex-col
            border-r border-white/10 bg-zinc-950
-           transition-all duration-300"
+           transition-all duration-300
+           w-60 (expandido) | w-14 (colapsado)"
+
+// Header del sidebar — expandido
+// [Logo Forticlaw] ........... [← ChevronLeft]
+className="flex h-14 items-center justify-between border-b border-white/10 px-3"
+
+// Header del sidebar — COLAPSADO (56px ancho)
+// Stacked: [Fo logo] sobre [→ ChevronRight]
+// Todo centrado, dentro del border, sin desbordarse
+className="flex h-14 flex-col items-center justify-center gap-1 border-b border-white/10"
+// El logo "Fo" → href="/dashboard" (no a la landing)
+// La flechita de expand es pequeña (h-3 w-3), discreta
 
 // Item nav activo
-className="flex items-center gap-3 rounded-lg px-3 py-2
-           bg-zinc-900 text-zinc-100 text-sm font-medium"
+className="flex items-center gap-2.5 rounded-lg px-2.5 py-2
+           bg-zinc-900 text-zinc-100 text-sm"
 
 // Item nav normal
-className="flex items-center gap-3 rounded-lg px-3 py-2
+className="flex items-center gap-2.5 rounded-lg px-2.5 py-2
            text-zinc-400 text-sm hover:text-zinc-100 hover:bg-zinc-900/50
            transition-colors"
 
+// Item nav colapsado — sin texto, centrado, con tooltip
+className="flex items-center justify-center rounded-lg px-2 py-2 ..."
+
 // Sub-item (proyecto en sidebar)
-className="flex items-center gap-2 rounded-lg pl-8 pr-3 py-1.5
-           text-zinc-500 text-sm hover:text-zinc-100 hover:bg-zinc-900/50
+className="block truncate rounded-md px-2.5 py-1.5 text-xs
+           text-zinc-500 hover:bg-zinc-900/50 hover:text-zinc-300
            transition-colors"
 
-// Credits bar
-className="mx-3 mb-2 rounded-xl border border-zinc-800/50 bg-zinc-900/50 p-3"
+// Credits card — expandida
+className="rounded-xl border border-white/10 bg-zinc-900/50 p-3"
+// Contenido: "[N] credits remaining" + barra de progreso + "used/total"
+
+// Credits card — COLAPSADA
+// CreditCard icon + ArrowUp icon apilados
+// El bloque completo es un <Link href="/dashboard/settings/billing">
+// Hover: ambos iconos se iluminan (group-hover)
+className="flex flex-col items-center gap-1.5 group"
 
 // User area (bottom del sidebar)
-className="flex items-center gap-3 rounded-lg mx-3 mb-3 px-3 py-2
-           hover:bg-zinc-900/50 transition-colors cursor-pointer"
+className="border-t border-white/10 px-3 py-3"
+// Expandida: <UserButton /> + nombre del usuario
+// Colapsada: solo <UserButton /> centrado
 ```
 
 ### Topbar specs
 
 ```tsx
 // Contenedor topbar
-className="fixed top-0 right-0 z-20 flex h-14 items-center justify-between
-           border-b border-white/10 bg-zinc-950/95 backdrop-blur-sm px-6
-           transition-all duration-300"
-// (El left se ajusta dinámicamente según si el sidebar está expandido o colapsado)
+className="fixed top-0 right-0 z-20 flex h-14 items-center gap-3
+           border-b border-white/10 bg-zinc-950/95 backdrop-blur-sm px-4
+           transition-[left] duration-300
+           left-0 lg:left-14 (colapsado) | left-0 lg:left-60 (expandido)"
 
-// Botón "+ New Creative" (siempre visible en topbar)
-className="rounded-full bg-white px-4 py-2 text-sm font-medium text-[#0a0a0a]
-           hover:bg-zinc-200 transition-colors"
+// Hamburger — solo mobile (lg:hidden)
+className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100 lg:hidden"
+
+// Botón "+ New Creative" (siempre visible en topbar desktop)
+className="hidden sm:flex items-center gap-1.5 rounded-full bg-white px-4 py-2
+           text-sm font-medium text-[#0a0a0a] hover:bg-zinc-200 transition-colors"
+
+// NOTA: El selector de idioma NO está en la topbar.
+// Está en /dashboard/settings como preferencia de usuario.
 ```
 
 ---

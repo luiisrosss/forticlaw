@@ -42,16 +42,21 @@ Forticlaw is an AI-powered ad creative platform built specifically for dropshipp
 User Account
 └── Project (1 per brand/store)
     ├── Brand Kit
-    ├── AI Settings (project-level instructions)
+    ├── AI Settings (project-level instructions + default platforms)
     ├── AI Memory (reference creatives + copy examples)
     ├── Shopify Connection (optional)
     └── Products
         ├── Product Data (extracted by AI)
         ├── Product AI Instructions (per-product overrides)
         └── Creatives (batches)
-            ├── Draft
+            ├── Campaign config (includes target platforms)
+            ├── Draft (platform-aware safe zones + copy format)
             └── Generated batch (5–12 creatives)
-                └── Each creative: image variants (4 formats) + copy
+                └── Each creative:
+                    ├── Meta variants: 1:1, 4:5, 9:16
+                    ├── TikTok variants: 9:16 (UGC-optimized copy)
+                    ├── Pinterest variants: 2:3, 1:1
+                    └── Google variants: 1.91:1, 1:1
 ```
 
 **Rules:**
@@ -59,6 +64,8 @@ User Account
 - 1 User can have N projects (limited by plan)
 - AI Memory is scoped to the project (not per-product)
 - Brand Kit settings apply to all products in the project by default
+- Platform selection is per-generation (not locked to project), but AI Settings stores the project default
+- 1 creative credit = 1 product visual concept, regardless of how many platform variants are exported (they're the same visual adapted to each ratio/style)
 
 ---
 

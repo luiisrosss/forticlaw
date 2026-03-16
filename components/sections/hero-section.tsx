@@ -2,6 +2,7 @@
 
 import { type FormEvent, useState } from "react"
 import { Logo } from "@/components/logo"
+import { Loader2 } from "lucide-react"
 
 const proofPoints = [
   { title: "Shopify or any product URL", copy: "No manual intake" },
@@ -11,12 +12,32 @@ const proofPoints = [
 
 export function HeroSection() {
   const [email, setEmail] = useState("")
-  const [submitted, setSubmitted] = useState(false)
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle")
+  const [errorMsg, setErrorMsg] = useState("")
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    if (email) {
-      setSubmitted(true)
+    if (!email || status === "loading") return
+
+    setStatus("loading")
+    setErrorMsg("")
+
+    try {
+      const res = await fetch("/api/waitlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      })
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        throw new Error(data.error ?? "Something went wrong")
+      }
+
+      setStatus("success")
+    } catch (err) {
+      setErrorMsg(err instanceof Error ? err.message : "Something went wrong")
+      setStatus("error")
     }
   }
 
@@ -43,10 +64,12 @@ export function HeroSection() {
           your paid campaigns need in every key ratio.
         </p>
 
-        {submitted ? (
+        {status === "success" ? (
           <div className="mx-auto max-w-md rounded-2xl border border-white/10 bg-zinc-950/70 p-6">
             <p className="mb-1 font-medium text-zinc-100">You&apos;re on the list.</p>
-            <p className="text-sm text-zinc-500">We&apos;ll let you know when early access opens.</p>
+            <p className="text-sm text-zinc-500">
+              Check your inbox — we&apos;ve sent you a confirmation with your early access details.
+            </p>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="mx-auto max-w-md">
@@ -57,15 +80,29 @@ export function HeroSection() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email"
-                className="flex-1 rounded-full border border-white/10 bg-zinc-950 px-5 py-3 text-sm text-zinc-100 transition-colors placeholder:text-zinc-600 focus:border-zinc-500 focus:outline-none"
+                disabled={status === "loading"}
+                className="flex-1 rounded-full border border-white/10 bg-zinc-950 px-5 py-3 text-sm text-zinc-100 transition-colors placeholder:text-zinc-600 focus:border-zinc-500 focus:outline-none disabled:opacity-50"
               />
               <button
                 type="submit"
-                className="whitespace-nowrap rounded-full border border-white/10 bg-white px-6 py-3 text-sm font-medium text-[#0a0a0a] transition-colors hover:bg-zinc-200"
+                disabled={status === "loading"}
+                className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full border border-white/10 bg-white px-6 py-3 text-sm font-medium text-[#0a0a0a] transition-colors hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                Request early access
+                {status === "loading" ? (
+                  <>
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    <span>Joining...</span>
+                  </>
+                ) : (
+                  "Request early access"
+                )}
               </button>
             </div>
+
+            {status === "error" && (
+              <p className="mt-3 text-xs text-red-400">{errorMsg}</p>
+            )}
+
             <p className="mt-4 text-xs text-zinc-600">
               Join the first operators testing Forticlaw before public launch.
             </p>
